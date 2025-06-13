@@ -7,8 +7,8 @@
     <title>Smart Dryer Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link rel="manifest" href="/manifest.json">
-    <link rel="apple-touch-icon" href="/icons/icon-192x192.png">
+    <link rel="manifest" href="/LoneRangeGamer/manifest.json">
+    <link rel="apple-touch-icon" href="/LoneRangeGamer/icons/icon-192x192.png">
     <style>
         body { font-family: 'Inter', sans-serif; }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Register Service Worker
     if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('/service-worker.js')
+        navigator.serviceWorker.register('/LoneRangeGamer/service-worker.js')
             .then(reg => console.log('Service Worker registered:', reg))
             .catch(err => console.error('Service Worker registration failed:', err));
     }
@@ -408,8 +408,8 @@ document.addEventListener('DOMContentLoaded', () => {
             if (result.candidates && result.candidates.length > 0 &&
                 result.candidates[0].content && result.candidates[0].content.parts &&
                 result.candidates[0].content.parts.length > 0) {
-                const text = result.candidates[0].content.parts[0].text;
-                adviceDisplayModal.adviceContent.textContent = text;
+                const advice = result.candidates[0].content.parts[0].text;
+                adviceDisplayModal.adviceContent.textContent = advice;
             } else {
                 adviceDisplayModal.adviceContent.textContent = "Sorry, I couldn't get advice for that fabric. Please try again.";
             }
