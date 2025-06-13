@@ -1,8 +1,8 @@
 const CACHE_NAME = 'smart-dryer-v1';
 const urlsToCache = [
-  '/index.html',
-  '/icons/icon-192x192.png',
-  '/icons/icon-512x512.png',
+  '/LoneRangeGamer/index.html',
+  '/LoneRangeGamer/icons/icon-192x192.png',
+  '/LoneRangeGamer/icons/icon-512x512.png',
   'https://cdn.tailwindcss.com',
   'https://cdn.jsdelivr.net/npm/chart.js',
   'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap'
