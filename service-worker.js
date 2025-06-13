@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
-    <title>Smart Dryer Control</title>
+    <title>Handy Dry Smart Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="/LoneRangeGamer/manifest.json">
@@ -42,7 +42,7 @@
         <!-- Splash Screen -->
         <div id="screen-splash" class="screen active flex-col items-center justify-center w-full h-full bg-slate-800 text-white">
             <div class="w-24 h-24 border-4 border-t-4 border-t-cyan-400 border-slate-600 rounded-full animate-spin"></div>
-            <h1 class="text-3xl font-bold mt-6">SmartDry</h1>
+            <h1 class="text-3xl font-bold mt-6">HandyDry Smart Control</h1>
             <p class="text-slate-400">Effortless Laundry, Smarter Living.</p>
         </div>
 
@@ -391,7 +391,7 @@ document.addEventListener('DOMContentLoaded', () => {
         bluetoothViews.scanView.classList.remove('hidden');
 
         setTimeout(() => {
-            const devices = ['SmartDryer X1', 'Laundry Room Dryer', 'Basement Dryer'];
+            const devices = ['HandyDry', 'Laundry Room Dryer', 'Basement Dryer'];
             bluetoothViews.devicesList.innerHTML = '';
             devices.forEach(device => {
                 const btn = document.createElement('button');
