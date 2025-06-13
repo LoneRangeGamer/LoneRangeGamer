@@ -5,140 +5,485 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
     <title>Smart Dryer Control</title>
-    <link href="/LoneRangeGamer/css/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="/LoneRangeGamer/manifest.json">
     <link rel="apple-touch-icon" href="/LoneRangeGamer/icons/icon-192x192.png">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f5f4;
+            color: #1c2524;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+        }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
-        .screen { display: none; }
-        .screen.active { display: flex; }
+        .screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+        }
+        .screen.active {
+            display: flex;
+        }
         .modal-bg {
             background-color: rgba(0, 0, 0, 0.5);
             transition: opacity 0.3s ease;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 50;
+        }
+        .modal-bg.flex {
+            display: flex;
         }
         .modal-content {
             transition: transform 0.3s ease;
+            transform: scale(0.95);
+            opacity: 0;
+        }
+        .modal-bg:not(.opacity-0) .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        .modal-bg.opacity-0 .modal-content {
+            transform: scale(0.95);
+            opacity: 0;
         }
         .chart-container {
             position: relative;
             width: 100%;
             max-width: 300px;
-            margin-left: auto;
-            margin-right: auto;
+            margin: 0 auto;
             height: 300px;
             max-height: 80vw;
         }
         @media (min-width: 768px) {
-            .chart-container { max-height: 300px; }
+            .chart-container {
+                max-height: 300px;
+            }
+        }
+        .container {
+            width: 100%;
+            max-width: 448px;
+            margin: 0 auto;
+            background-color: #fafaf9;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-radius: 24px;
+            overflow: hidden;
+            height: 80vh;
+            min-height: 600px;
+            max-height: 800px;
+            display: flex;
+            flex-direction: column;
+        }
+        .splash {
+            background-color: #1e293b;
+            color: #ffffff;
+            text-align: center;
+        }
+        .spinner {
+            width: 96px;
+            height: 96px;
+            border: 4px solid #475569;
+            border-top: 4px solid #22d3ee;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .splash h1 {
+            font-size: 30px;
+            font-weight: 700;
+            margin-top: 24px;
+        }
+        .splash p {
+            color: #94a3b8;
+        }
+        .bluetooth {
+            padding: 24px;
+            text-align: center;
+        }
+        .bluetooth h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .bluetooth p {
+            color: #78716c;
+            margin: 8px 0 24px;
+        }
+        .bluetooth-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto;
+            background-color: #cffafe;
+            color: #0891b2;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            margin-bottom: 24px;
+        }
+        .bluetooth p.small {
+            font-size: 14px;
+            color: #57534e;
+            margin-bottom: 16px;
+        }
+        button {
+            width: 100%;
+            background-color: #1e293b;
+            color: #ffffff;
+            font-weight: 700;
+            padding: 12px 16px;
+            border-radius: 12px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #334155;
+        }
+        .bluetooth .hidden {
+            display: none;
+        }
+        .bluetooth .devices-list button {
+            text-align: left;
+            background-color: #f5f5f4;
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+        }
+        .bluetooth .devices-list button:hover {
+            background-color: #e7e5e4;
+        }
+        .connecting-spinner {
+            width: 64px;
+            height: 64px;
+            border: 4px solid #e7e5e4;
+            border-top: 4px solid #06b6d4;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        .dashboard header {
+            padding: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .dashboard h1 {
+            font-size: 24px;
+            font-weight: 800;
+            color: #1e293b;
+        }
+        .dashboard .status {
+            font-size: 14px;
+            font-weight: 500;
+            color: #2563eb;
+        }
+        .settings-btn {
+            width: 40px;
+            height: 40px;
+            background-color: #e7e5e4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .settings-btn:hover {
+            background-color: #d6d3d1;
+        }
+        .dashboard main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            margin-top: -8px;
+        }
+        .dashboard footer {
+            padding: 16px;
+            background-color: #f5f5f4;
+            border-top-left-radius: 24px;
+            border-top-right-radius: 24px;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .footer-grid p.label {
+            font-size: 12px;
+            color: #78716c;
+        }
+        .footer-grid p.value {
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .power-btn {
+            background-color: #06b6d4;
+            transform: scale(1);
+            transition: transform 0.3s ease-in-out;
+        }
+        .power-btn:hover {
+            transform: scale(1.05);
+        }
+        .power-btn.stop {
+            background-color: #f43f5e;
+        }
+        .chart-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            pointer-events: none;
+        }
+        .time-remaining {
+            font-size: 48px;
+            font-weight: 700;
+            color: #f8fafc;
+        }
+        .timer-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #78716c;
+        }
+        .modal {
+            background-color: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            width: 91.67%;
+            max-width: 384px;
+            padding: 24px;
+        }
+        .modal h3 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+        .modal label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+        .modal input[type="range"] {
+            width: 100%;
+            height: 8px;
+            background-color: #e7e5e4;
+            border-radius: 8px;
+            cursor: pointer;
+            -webkit-appearance: none;
+        }
+        .modal input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 16px;
+            height: 16px;
+            background-color: #1e293b;
+            border-radius: 50%;
+        }
+        .timer-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        .timer-btn {
+            width: 48px;
+            height: 48px;
+            background-color: #e7e5e4;
+            font-size: 24px;
+            font-weight: 700;
+            border-radius: 50%;
+        }
+        .timer-btn:hover {
+            background-color: #d6d3d1;
+        }
+        .timer-value {
+            font-size: 36px;
+            font-weight: 700;
+            width: 80px;
+            text-align: center;
+        }
+        .modal-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .modal-buttons button.cancel {
+            background-color: #e7e5e4;
+            color: #1c2524;
+        }
+        .modal-buttons button.cancel:hover {
+            background-color: #d6d3d1;
+        }
+        .fabric-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #d6d3d1;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+        .fabric-input:focus {
+            outline: none;
+            border-color: #06b6d4;
+            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.5);
+        }
+        .advice-content {
+            color: #1c2524;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #f5f5f4;
+            padding: 16px;
+            border-radius: 8px;
+            overflow-y: auto;
+            max-height: 256px;
+            margin-bottom: 24px;
+        }
+        .advice-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #e7e5e4;
+            border-top: 4px solid #a855f7;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 32px auto;
+        }
+        .advice-loading {
+            color: #78716c;
+            text-align: center;
         }
     </style>
 </head>
-<body class="bg-stone-100 text-stone-800 flex items-center justify-center min-h-screen">
-    <div class="w-full max-w-md mx-auto bg-stone-50 shadow-2xl rounded-3xl overflow-hidden h-[80vh] min-h-[600px] max-h-[800px] flex flex-col">
+<body>
+    <div class="container">
         <!-- Splash Screen -->
-        <div id="screen-splash" class="screen active flex-col items-center justify-center w-full h-full bg-slate-800 text-white">
-            <div class="w-24 h-24 border-4 border-t-4 border-t-cyan-400 border-slate-600 rounded-full animate-spin"></div>
-            <h1 class="text-3xl font-bold mt-6">SmartDry</h1>
-            <p class="text-slate-400">Effortless Laundry, Smarter Living.</p>
+        <div id="screen-splash" class="screen active splash">
+            <div class="spinner"></div>
+            <h1>SmartDry</h1>
+            <p>Effortless Laundry, Smarter Living.</p>
         </div>
         <!-- Bluetooth Connection Screen -->
-        <div id="screen-bluetooth" class="screen flex-col items-center justify-center w-full h-full p-6 text-center">
-            <h2 class="text-2xl font-bold text-slate-800">Connect Your Dryer</h2>
-            <p class="text-stone-500 mt-2 mb-6">First, let's pair your dryer using Bluetooth.</p>
+        <div id="screen-bluetooth" class="screen bluetooth">
+            <h2>Connect Your Dryer</h2>
+            <p>First, let's pair your dryer using Bluetooth.</p>
             <div id="bluetooth-initial-view">
-                <div class="w-20 h-20 mx-auto bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-4xl mb-6">B</div>
-                <p class="text-sm text-stone-600 mb-4">1. Ensure your dryer's Bluetooth is enabled.</p>
-                <button id="scan-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Scan for Dryers</button>
+                <div class="bluetooth-icon">B</div>
+                <p class="small">1. Ensure your dryer's Bluetooth is enabled.</p>
+                <button id="scan-btn">Scan for Dryers</button>
             </div>
-            <div id="bluetooth-scan-view" class="hidden w-full">
-                 <div class="w-full text-left">
-                    <p class="font-bold mb-2">Searching for devices...</p>
-                    <div class="space-y-2" id="devices-list"></div>
+            <div id="bluetooth-scan-view" class="hidden">
+                 <div>
+                    <p style="font-weight: 700; margin-bottom: 8px;">Searching for devices...</p>
+                    <div class="devices-list" id="devices-list"></div>
                  </div>
             </div>
-             <div id="bluetooth-connecting-view" class="hidden w-full">
-                <div class="w-16 h-16 border-4 border-t-4 border-t-cyan-500 border-stone-200 rounded-full animate-spin mx-auto mb-4"></div>
-                <p class="text-lg font-semibold text-stone-600">Connecting...</p>
+             <div id="bluetooth-connecting-view" class="hidden">
+                <div class="connecting-spinner"></div>
+                <p style="font-size: 18px; font-weight: 600; color: #57534e;">Connecting...</p>
             </div>
         </div>
         <!-- Home/Dashboard Screen -->
-        <div id="screen-dashboard" class="screen flex-col w-full h-full items-center">
-            <header class="p-6 flex items-center justify-between">
+        <div id="screen-dashboard" class="screen dashboard">
+            <header>
                 <div>
-                    <h1 class="text-2xl font-extrabold text-slate-800">MyDryer X1</h1>
-                    <p id="dryer-status-header" class="text-sm font-medium text-blue-600">Connected & Ready</p>
+                    <h1>MyDryer X1</h1>
+                    <p id="dryer-status-header" class="status">Connected & Ready</p>
                 </div>
-                <button id="open-settings-btn" class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center text-xl hover:bg-stone-300 transition-colors">⚙</button>
+                <button id="open-settings-btn" class="settings-btn">⚙</button>
             </header>
-            <main class="flex-1 flex flex-col items-center justify-center p-4 -mt-2">
+            <main>
                 <div class="chart-container">
                     <canvas id="time-remaining-chart"></canvas>
-                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                        <div id="time-remaining-text" class="text-5xl font-bold text-slate-50">0:00</div>
-                        <div id="timer-label" class="text-sm font-medium text-stone-500">Time Remaining</div>
+                    <div class="chart-overlay">
+                        <div id="time-remaining-text" class="time-remaining">0:00</div>
+                        <div id="timer-label" class="timer-label">Time Remaining</div>
                     </div>
                 </div>
             </main>
-            <footer class="p-4 bg-stone-100 rounded-t-3xl">
-                <div class="grid grid-cols-2 gap-4 text-center mb-6">
+            <footer>
+                <div class="footer-grid">
                     <div>
-                        <p class="text-xs text-stone-500">Temperature</p>
-                        <p id="temp-display" class="font-bold text-lg">60°C</p>
+                        <p class="label">Temperature</p>
+                        <p id="temp-display" class="value">60°C</p>
                     </div>
                     <div>
-                        <p class="text-xs text-stone-500">Duration</p>
-                        <p id="duration-display" class="font-bold text-lg">45 min</p>
+                        <p class="label">Duration</p>
+                        <p id="duration-display" class="value">45 min</p>
                     </div>
                 </div>
-                <button id="power-btn" class="w-full font-bold py-4 px-4 rounded-2xl transition-all duration-300 ease-in-out transform hover:scale-105 bg-cyan-500 text-white">Turn On Dryer</button>
+                <button id="power-btn" class="power-btn">Turn On Dryer</button>
             </footer>
         </div>
     </div>
     <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
-        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
-            <h3 class="text-xl font-bold mb-6 text-center">Dryer Settings</h3>
-            <div class="mb-6">
-                <label for="temp-slider" class="block font-medium mb-2">Temperature: <span id="temp-value">60</span>°C</label>
-                <input id="temp-slider" type="range" min="30" max="60" value="60" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer">
+    <div id="settings-modal" class="fixed inset-0 modal-bg">
+        <div class="modal">
+            <h3>Dryer Settings</h3>
+            <div style="margin-bottom: 24px;">
+                <label for="temp-slider">Temperature: <span id="temp-value">60</span>°C</label>
+                <input id="temp-slider" type="range" min="30" max="60" value="60">
             </div>
-            <div class="mb-8">
-                <label class="block font-medium mb-2">Timer (minutes)</label>
-                <div class="flex items-center justify-center space-x-4">
-                    <button id="timer-minus" class="w-12 h-12 bg-stone-200 text-2xl font-bold rounded-full hover:bg-stone-300 transition-colors">-</button>
-                    <span id="timer-value" class="text-3xl font-bold w-20 text-center">45</span>
-                    <button id="timer-plus" class="w-12 h-12 bg-stone-200 text-2xl font-bold rounded-full hover:bg-stone-300 transition-colors">+</button>
+            <div style="margin-bottom: 32px;">
+                <label>Timer (minutes)</label>
+                <div class="timer-controls">
+                    <button id="timer-minus" class="timer-btn">-</button>
+                    <span id="timer-value" class="timer-value">45</span>
+                    <button id="timer-plus" class="timer-btn">+</button>
                 </div>
             </div>
-            <div class="flex space-x-4 mb-4">
-                <button id="cancel-settings-btn" class="w-full bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl hover:bg-stone-300 transition-colors">Cancel</button>
-                <button id="save-settings-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Save</button>
+            <div class="modal-buttons">
+                <button id="cancel-settings-btn" class="cancel">Cancel</button>
+                <button id="save-settings-btn">Save</button>
             </div>
-            <!-- <button id="get-fabric-advice-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition-colors mt-2">✨ Get Fabric Care Advice ✨</button> -->
+            <!-- <button id="get-fabric-advice-btn" style="background-color: #a855f7; color: #ffffff; margin-top: 8px;">✨ Get Fabric Care Advice ✨</button> -->
         </div>
     </div>
     <!-- Fabric Advice Input Modal -->
-    <div id="fabric-input-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
-        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
-            <h3 class="text-xl font-bold mb-6 text-center">What fabric are you drying?</h3>
-            <input type="text" id="fabric-input" placeholder="e.g., Cotton, Silk, Denim" class="w-full p-3 border border-stone-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500">
-            <div class="flex space-x-4">
-                <button id="cancel-fabric-input-btn" class="w-full bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl hover:bg-stone-300 transition-colors">Cancel</button>
-                <button id="submit-fabric-input-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition-colors">Get Advice</button>
+    <div id="fabric-input-modal" class="fixed inset-0 modal-bg">
+        <div class="modal">
+            <h3>What fabric are you drying?</h3>
+            <input type="text" id="fabric-input" placeholder="e.g., Cotton, Silk, Denim" class="fabric-input">
+            <div class="modal-buttons">
+                <button id="cancel-fabric-input-btn" class="cancel">Cancel</button>
+                <button id="submit-fabric-input-btn" style="background-color: #a855f7; color: #ffffff;">Get Advice</button>
             </div>
         </div>
     </div>
     <!-- Advice Display Modal -->
-    <div id="advice-display-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
-        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-md p-6 modal-content scale-95 opacity-0">
-            <h3 class="text-xl font-bold mb-4 text-center">✨ Fabric Care Advice ✨</h3>
-            <div id="advice-content" class="text-stone-700 text-sm leading-relaxed mb-6 bg-stone-100 p-4 rounded-lg overflow-y-auto max-h-64">
-                <div class="w-10 h-10 border-4 border-t-4 border-t-purple-500 border-stone-200 rounded-full animate-spin mx-auto my-8"></div>
-                <p class="text-center text-stone-500">Generating advice...</p>
+    <div id="advice-display-modal" class="fixed inset-0 modal-bg">
+        <div class="modal" style="max-width: 448px;">
+            <h3>✨ Fabric Care Advice ✨</h3>
+            <div id="advice-content" class="advice-content">
+                <div class="advice-spinner"></div>
+                <p class="advice-loading">Generating advice...</p>
             </div>
-            <button id="close-advice-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Close</button>
+            <button id="close-advice-btn">Close</button>
         </div>
     </div>
 <script>
@@ -181,7 +526,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const settingsModal = {
         container: document.getElementById('settings-modal'),
-        content: document.querySelector('#settings-modal .modal-content'),
+        content: document.querySelector('#settings-modal .modal'),
         tempSlider: document.getElementById('temp-slider'),
         tempValue: document.getElementById('temp-value'),
         timerValue: document.getElementById('timer-value'),
@@ -193,14 +538,14 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     const fabricInputModal = {
         container: document.getElementById('fabric-input-modal'),
-        content: document.querySelector('#fabric-input-modal .modal-content'),
+        content: document.querySelector('#fabric-input-modal .modal'),
         fabricInput: document.getElementById('fabric-input'),
         cancelBtn: document.getElementById('cancel-fabric-input-btn'),
         submitBtn: document.getElementById('submit-fabric-input-btn'),
     };
     const adviceDisplayModal = {
         container: document.getElementById('advice-display-modal'),
-        content: document.querySelector('#advice-display-modal .modal-content'),
+        content: document.querySelector('#advice-display-modal .modal'),
         adviceContent: document.getElementById('advice-content'),
         closeBtn: document.getElementById('close-advice-btn'),
     };
@@ -289,14 +634,12 @@ document.addEventListener('DOMContentLoaded', () => {
         appState.totalDuration = appState.duration * 60;
         appState.timeRemaining = appState.totalDuration;
         dashboardElements.powerBtn.textContent = 'Turn Off Dryer';
-        dashboardElements.powerBtn.classList.remove('bg-cyan-500');
-        dashboardElements.powerBtn.classList.add('bg-rose-500');
+        dashboardElements.powerBtn.classList.add('stop');
         dashboardElements.dryerStatusHeader.textContent = 'Drying Cycle Active';
-        dashboardElements.dryerStatusHeader.classList.remove('text-blue-600');
-        dashboardElements.dryerStatusHeader.classList.add('text-amber-600');
+        dashboardElements.dryerStatusHeader.style.color = '#f59e0b';
         dashboardElements.timerLabel.textContent = "Time Remaining";
         dashboardElements.openSettingsBtn.disabled = true;
-        dashboardElements.openSettingsBtn.classList.add('opacity-50');
+        dashboardElements.openSettingsBtn.style.opacity = '0.5';
         timerInterval = setInterval(() => {
             appState.timeRemaining -= 1;
             dashboardElements.timeRemainingText.textContent = formatTime(appState.timeRemaining);
@@ -310,13 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
         clearInterval(timerInterval);
         appState.isDrying = false;
         dashboardElements.powerBtn.textContent = 'Turn On Dryer';
-        dashboardElements.powerBtn.classList.remove('bg-rose-500');
-        dashboardElements.powerBtn.classList.add('bg-cyan-500');
+        dashboardElements.powerBtn.classList.remove('stop');
         dashboardElements.dryerStatusHeader.textContent = isFinished ? 'Cycle Complete' : 'Connected & Ready';
-        dashboardElements.dryerStatusHeader.classList.add('text-blue-600');
-        dashboardElements.dryerStatusHeader.classList.remove('text-amber-600');
+        dashboardElements.dryerStatusHeader.style.color = '#2563eb';
         dashboardElements.openSettingsBtn.disabled = false;
-        dashboardElements.openSettingsBtn.classList.remove('opacity-50');
+        dashboardElements.openSettingsBtn.style.opacity = '1';
         if (isFinished) {
             dashboardElements.timerLabel.textContent = "Finished!";
             dashboardElements.timeRemainingText.textContent = "Done";
@@ -371,8 +712,8 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     async function getFabricCareAdvice(fabricType) {
         adviceDisplayModal.adviceContent.innerHTML = `
-            <div class="w-10 h-10 border-4 border-t-4 border-t-purple-500 border-stone-200 rounded-full animate-spin mx-auto my-8"></div>
-            <p class="text-center text-stone-500">Generating advice for ${fabricType}...</p>
+            <div class="advice-spinner"></div>
+            <p class="advice-loading">Generating advice for ${fabricType}...</p>
         `;
         showModal(adviceDisplayModal);
         const prompt = `Provide concise smart dryer settings and tips for drying ${fabricType}, including recommended temperature (e.g., low, medium, high), duration (e.g., short, medium, long), and any special instructions (e.g., air dry, tumble dry low). Be specific and helpful. Format as a short paragraph.`;
