@@ -1,6 +1,6 @@
 {
-  "name": "HandyDry Smart Control",
-  "short_name": "SmartDry",
+  "name": "HandyDry Smart",
+  "short_name": "HandyDry",
   "description": "Control your smart dryer with ease. Set temperature, timer, and get fabric care advice.",
   "start_url": "/LoneRangeGamer/",
   "display": "standalone",
