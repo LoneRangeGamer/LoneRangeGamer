@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
     <title>Smart Dryer Control</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="/LoneRangeGamer/css/tailwind.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="/LoneRangeGamer/manifest.json">
     <link rel="apple-touch-icon" href="/LoneRangeGamer/icons/icon-192x192.png">
@@ -36,16 +36,13 @@
     </style>
 </head>
 <body class="bg-stone-100 text-stone-800 flex items-center justify-center min-h-screen">
-
     <div class="w-full max-w-md mx-auto bg-stone-50 shadow-2xl rounded-3xl overflow-hidden h-[80vh] min-h-[600px] max-h-[800px] flex flex-col">
-
         <!-- Splash Screen -->
         <div id="screen-splash" class="screen active flex-col items-center justify-center w-full h-full bg-slate-800 text-white">
             <div class="w-24 h-24 border-4 border-t-4 border-t-cyan-400 border-slate-600 rounded-full animate-spin"></div>
             <h1 class="text-3xl font-bold mt-6">SmartDry</h1>
             <p class="text-slate-400">Effortless Laundry, Smarter Living.</p>
         </div>
-
         <!-- Bluetooth Connection Screen -->
         <div id="screen-bluetooth" class="screen flex-col items-center justify-center w-full h-full p-6 text-center">
             <h2 class="text-2xl font-bold text-slate-800">Connect Your Dryer</h2>
@@ -63,29 +60,28 @@
             </div>
              <div id="bluetooth-connecting-view" class="hidden w-full">
                 <div class="w-16 h-16 border-4 border-t-4 border-t-cyan-500 border-stone-200 rounded-full animate-spin mx-auto mb-4"></div>
-                <p class="text-lg font-semibold text-stone-700">Connecting to <span id="connecting-device-name"></span>...</p>
+                <p class="text-lg font-semibold text-stone-600">Connecting...</p>
             </div>
         </div>
-
         <!-- Home/Dashboard Screen -->
-        <div id="screen-dashboard" class="screen flex-col w-full h-full">
+        <div id="screen-dashboard" class="screen flex-col w-full h-full items-center">
             <header class="p-6 flex items-center justify-between">
                 <div>
                     <h1 class="text-2xl font-extrabold text-slate-800">MyDryer X1</h1>
-                    <p id="dryer-status-header" class="text-sm font-medium text-green-600">Connected & Ready</p>
+                    <p id="dryer-status-header" class="text-sm font-medium text-blue-600">Connected & Ready</p>
                 </div>
                 <button id="open-settings-btn" class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center text-xl hover:bg-stone-300 transition-colors">⚙</button>
             </header>
-            <main class="flex-1 flex flex-col items-center justify-center p-6 -mt-8">
+            <main class="flex-1 flex flex-col items-center justify-center p-4 -mt-2">
                 <div class="chart-container">
                     <canvas id="time-remaining-chart"></canvas>
-                    <div id="timer-display" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
-                        <span id="time-remaining-text" class="text-5xl font-bold text-slate-800">0:00</span>
-                        <span id="timer-label" class="text-sm font-medium text-stone-500">Time Remaining</span>
+                    <div class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                        <div id="time-remaining-text" class="text-5xl font-bold text-slate-50">0:00</div>
+                        <div id="timer-label" class="text-sm font-medium text-stone-500">Time Remaining</div>
                     </div>
                 </div>
             </main>
-            <footer class="p-6 bg-stone-100 rounded-t-3xl">
+            <footer class="p-4 bg-stone-100 rounded-t-3xl">
                 <div class="grid grid-cols-2 gap-4 text-center mb-6">
                     <div>
                         <p class="text-xs text-stone-500">Temperature</p>
@@ -99,19 +95,15 @@
                 <button id="power-btn" class="w-full font-bold py-4 px-4 rounded-2xl transition-all duration-300 ease-in-out transform hover:scale-105 bg-cyan-500 text-white">Turn On Dryer</button>
             </footer>
         </div>
-
     </div>
-
     <!-- Settings Modal -->
     <div id="settings-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
         <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
             <h3 class="text-xl font-bold mb-6 text-center">Dryer Settings</h3>
-            
             <div class="mb-6">
                 <label for="temp-slider" class="block font-medium mb-2">Temperature: <span id="temp-value">60</span>°C</label>
                 <input id="temp-slider" type="range" min="30" max="60" value="60" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer">
             </div>
-
             <div class="mb-8">
                 <label class="block font-medium mb-2">Timer (minutes)</label>
                 <div class="flex items-center justify-center space-x-4">
@@ -120,16 +112,13 @@
                     <button id="timer-plus" class="w-12 h-12 bg-stone-200 text-2xl font-bold rounded-full hover:bg-stone-300 transition-colors">+</button>
                 </div>
             </div>
-
             <div class="flex space-x-4 mb-4">
                 <button id="cancel-settings-btn" class="w-full bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl hover:bg-stone-300 transition-colors">Cancel</button>
                 <button id="save-settings-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Save</button>
             </div>
-            
             <!-- <button id="get-fabric-advice-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition-colors mt-2">✨ Get Fabric Care Advice ✨</button> -->
         </div>
     </div>
-
     <!-- Fabric Advice Input Modal -->
     <div id="fabric-input-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
         <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
@@ -141,7 +130,6 @@
             </div>
         </div>
     </div>
-
     <!-- Advice Display Modal -->
     <div id="advice-display-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
         <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-md p-6 modal-content scale-95 opacity-0">
@@ -153,23 +141,37 @@
             <button id="close-advice-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Close</button>
         </div>
     </div>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    
+    // Request Notification Permission
+    function requestNotificationPermission() {
+        if (Notification.permission === 'default') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    console.log('Notification permission granted.');
+                } else {
+                    console.log('Notification permission denied.');
+                }
+            });
+        }
+    }
+    // Show Notification
+    function showNotification(title, options) {
+        if (Notification.permission === 'granted') {
+            new Notification(title, options);
+        }
+    }
     // Register Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/LoneRangeGamer/service-worker.js')
             .then(reg => console.log('Service Worker registered:', reg))
             .catch(err => console.error('Service Worker registration failed:', err));
     }
-    
     const screens = {
         splash: document.getElementById('screen-splash'),
         bluetooth: document.getElementById('screen-bluetooth'),
         dashboard: document.getElementById('screen-dashboard')
     };
-
     const bluetoothViews = {
         initial: document.getElementById('bluetooth-initial-view'),
         scan: document.getElementById('scan-btn'),
@@ -177,7 +179,6 @@ document.addEventListener('DOMContentLoaded', () => {
         connecting: document.getElementById('bluetooth-connecting-view'),
         devicesList: document.getElementById('devices-list')
     };
-    
     const settingsModal = {
         container: document.getElementById('settings-modal'),
         content: document.querySelector('#settings-modal .modal-content'),
@@ -188,9 +189,8 @@ document.addEventListener('DOMContentLoaded', () => {
         timerPlus: document.getElementById('timer-plus'),
         saveBtn: document.getElementById('save-settings-btn'),
         cancelBtn: document.getElementById('cancel-settings-btn'),
-        getFabricAdviceBtn: document.getElementById('get-fabric-advice-btn'),
+        // getFabricAdviceBtn: document.getElementById('get-fabric-advice-btn'), // Commented out
     };
-
     const fabricInputModal = {
         container: document.getElementById('fabric-input-modal'),
         content: document.querySelector('#fabric-input-modal .modal-content'),
@@ -198,14 +198,12 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtn: document.getElementById('cancel-fabric-input-btn'),
         submitBtn: document.getElementById('submit-fabric-input-btn'),
     };
-
     const adviceDisplayModal = {
         container: document.getElementById('advice-display-modal'),
         content: document.querySelector('#advice-display-modal .modal-content'),
         adviceContent: document.getElementById('advice-content'),
         closeBtn: document.getElementById('close-advice-btn'),
     };
-    
     const dashboardElements = {
         openSettingsBtn: document.getElementById('open-settings-btn'),
         powerBtn: document.getElementById('power-btn'),
@@ -215,10 +213,8 @@ document.addEventListener('DOMContentLoaded', () => {
         timeRemainingText: document.getElementById('time-remaining-text'),
         timerLabel: document.getElementById('timer-label')
     };
-
     let timeRemainingChart;
     let timerInterval;
-
     const appState = {
         currentScreen: 'splash',
         temperature: 60,
@@ -227,7 +223,6 @@ document.addEventListener('DOMContentLoaded', () => {
         timeRemaining: 0,
         totalDuration: 45 * 60,
     };
-
     function navigateTo(screenName) {
         Object.values(screens).forEach(screen => screen.classList.remove('active'));
         if (screens[screenName]) {
@@ -235,14 +230,12 @@ document.addEventListener('DOMContentLoaded', () => {
             appState.currentScreen = screenName;
         }
     }
-    
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
-
     function updateDashboardDisplays() {
         dashboardElements.tempDisplay.textContent = `${appState.temperature}°C`;
         dashboardElements.durationDisplay.textContent = `${appState.duration} min`;
@@ -253,7 +246,6 @@ document.addEventListener('DOMContentLoaded', () => {
              updateChart(appState.timeRemaining, appState.totalDuration);
         }
     }
-
     function initChart() {
         const ctx = document.getElementById('time-remaining-chart').getContext('2d');
         timeRemainingChart = new Chart(ctx, {
@@ -281,65 +273,64 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         updateDashboardDisplays();
     }
-    
     function updateChart(remaining, total) {
         if (!timeRemainingChart) return;
         const progress = total > 0 ? ((total - remaining) / total) * 100 : 0;
         const remainingPercentage = 100 - progress;
         timeRemainingChart.data.datasets[0].data[0] = progress;
         timeRemainingChart.data.datasets[0].data[1] = remainingPercentage;
-        timeRemainingChart.update('none'); 
+        timeRemainingChart.update('none');
     }
-
     function startDryingCycle() {
         if (appState.isDrying) return;
+        // Request notification permission before starting cycle
+        requestNotificationPermission();
         appState.isDrying = true;
         appState.totalDuration = appState.duration * 60;
         appState.timeRemaining = appState.totalDuration;
-
         dashboardElements.powerBtn.textContent = 'Turn Off Dryer';
         dashboardElements.powerBtn.classList.remove('bg-cyan-500');
         dashboardElements.powerBtn.classList.add('bg-rose-500');
         dashboardElements.dryerStatusHeader.textContent = 'Drying Cycle Active';
-        dashboardElements.dryerStatusHeader.classList.remove('text-green-600');
+        dashboardElements.dryerStatusHeader.classList.remove('text-blue-600');
         dashboardElements.dryerStatusHeader.classList.add('text-amber-600');
         dashboardElements.timerLabel.textContent = "Time Remaining";
         dashboardElements.openSettingsBtn.disabled = true;
         dashboardElements.openSettingsBtn.classList.add('opacity-50');
-
         timerInterval = setInterval(() => {
             appState.timeRemaining -= 1;
             dashboardElements.timeRemainingText.textContent = formatTime(appState.timeRemaining);
             updateChart(appState.timeRemaining, appState.totalDuration);
-
             if (appState.timeRemaining <= 0) {
                 stopDryingCycle(true);
             }
         }, 1000);
     }
-    
     function stopDryingCycle(isFinished = false) {
         clearInterval(timerInterval);
         appState.isDrying = false;
-        
         dashboardElements.powerBtn.textContent = 'Turn On Dryer';
         dashboardElements.powerBtn.classList.remove('bg-rose-500');
         dashboardElements.powerBtn.classList.add('bg-cyan-500');
         dashboardElements.dryerStatusHeader.textContent = isFinished ? 'Cycle Complete' : 'Connected & Ready';
-        dashboardElements.dryerStatusHeader.classList.add('text-green-600');
+        dashboardElements.dryerStatusHeader.classList.add('text-blue-600');
         dashboardElements.dryerStatusHeader.classList.remove('text-amber-600');
         dashboardElements.openSettingsBtn.disabled = false;
         dashboardElements.openSettingsBtn.classList.remove('opacity-50');
-        
         if (isFinished) {
             dashboardElements.timerLabel.textContent = "Finished!";
             dashboardElements.timeRemainingText.textContent = "Done";
             updateChart(0, 1);
+            // Show notification
+            showNotification('Smart Dryer Control', {
+                body: 'Cycle Complete! Your laundry is ready.',
+                icon: '/LoneRangeGamer/icons/icon-192x192.png',
+                badge: '/LoneRangeGamer/icons/icon-192x192.png'
+            });
         } else {
-             updateDashboardDisplays();
+            updateDashboardDisplays();
         }
     }
-
     function showModal(modalObj) {
         modalObj.container.classList.remove('hidden');
         modalObj.container.classList.add('flex');
@@ -348,7 +339,6 @@ document.addEventListener('DOMContentLoaded', () => {
             modalObj.content.classList.remove('scale-95', 'opacity-0');
         }, 10);
     }
-
     function hideModal(modalObj) {
         modalObj.container.classList.add('opacity-0');
         modalObj.content.classList.add('scale-95', 'opacity-0');
@@ -357,11 +347,9 @@ document.addEventListener('DOMContentLoaded', () => {
             modalObj.container.classList.remove('flex');
         }, 300);
     }
-
     function handleBluetoothConnection() {
         bluetoothViews.initial.classList.add('hidden');
         bluetoothViews.scanView.classList.remove('hidden');
-
         setTimeout(() => {
             const devices = ['SmartDryer X1', 'Laundry Room Dryer', 'Basement Dryer'];
             bluetoothViews.devicesList.innerHTML = '';
@@ -372,7 +360,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.onclick = () => {
                     bluetoothViews.scanView.classList.add('hidden');
                     bluetoothViews.connecting.classList.remove('hidden');
-                    document.getElementById('connecting-device-name').textContent = device;
                     setTimeout(() => {
                         navigateTo('dashboard');
                         initChart();
@@ -382,22 +369,18 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, 1500);
     }
-
     async function getFabricCareAdvice(fabricType) {
         adviceDisplayModal.adviceContent.innerHTML = `
             <div class="w-10 h-10 border-4 border-t-4 border-t-purple-500 border-stone-200 rounded-full animate-spin mx-auto my-8"></div>
             <p class="text-center text-stone-500">Generating advice for ${fabricType}...</p>
         `;
         showModal(adviceDisplayModal);
-
         const prompt = `Provide concise smart dryer settings and tips for drying ${fabricType}, including recommended temperature (e.g., low, medium, high), duration (e.g., short, medium, long), and any special instructions (e.g., air dry, tumble dry low). Be specific and helpful. Format as a short paragraph.`;
-        
         let chatHistory = [];
         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
         const payload = { contents: chatHistory };
         const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -417,19 +400,15 @@ document.addEventListener('DOMContentLoaded', () => {
             adviceDisplayModal.adviceContent.textContent = `An error occurred: ${error.message}. Please check your connection.`;
         }
     }
-
     // Event Listeners
     setTimeout(() => navigateTo('bluetooth'), 2000);
-    
     bluetoothViews.scan.addEventListener('click', handleBluetoothConnection);
-    
     dashboardElements.openSettingsBtn.addEventListener('click', () => {
         if (!appState.isDrying) showModal(settingsModal);
     });
     dashboardElements.powerBtn.addEventListener('click', () => {
         appState.isDrying ? stopDryingCycle() : startDryingCycle();
     });
-
     settingsModal.cancelBtn.addEventListener('click', () => hideModal(settingsModal));
     settingsModal.saveBtn.addEventListener('click', () => {
         appState.temperature = parseInt(settingsModal.tempSlider.value);
@@ -437,37 +416,32 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDashboardDisplays();
         hideModal(settingsModal);
     });
-
     settingsModal.tempSlider.addEventListener('input', (e) => {
         settingsModal.tempValue.textContent = e.target.value;
     });
-
     settingsModal.timerMinus.addEventListener('click', () => {
         let current = parseInt(settingsModal.timerValue.textContent);
         if (current > 5) {
             settingsModal.timerValue.textContent = current - 5;
         }
     });
-
     settingsModal.timerPlus.addEventListener('click', () => {
         let current = parseInt(settingsModal.timerValue.textContent);
          if (current < 180) {
             settingsModal.timerValue.textContent = current + 5;
         }
     });
-
-    // LLM Integration Event Listeners
+    // LLM Integration Event Listeners (Commented out due to missing API key)
+    /*
     settingsModal.getFabricAdviceBtn.addEventListener('click', () => {
         hideModal(settingsModal);
         showModal(fabricInputModal);
-        fabricInputModal.fabricInput.value = ''; // Clear previous input
+        fabricInputModal.fabricInput.value = '';
     });
-
     fabricInputModal.cancelBtn.addEventListener('click', () => {
         hideModal(fabricInputModal);
-        showModal(settingsModal); // Return to settings modal
+        showModal(settingsModal);
     });
-
     fabricInputModal.submitBtn.addEventListener('click', () => {
         const fabricType = fabricInputModal.fabricInput.value.trim();
         if (fabricType) {
@@ -478,11 +452,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fabricInputModal.fabricInput.classList.add('border-red-500');
         }
     });
-
     adviceDisplayModal.closeBtn.addEventListener('click', () => {
         hideModal(adviceDisplayModal);
-        showModal(settingsModal); // Return to settings modal
+        showModal(settingsModal);
     });
+    */
 });
 </script>
 </body>
