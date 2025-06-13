@@ -42,7 +42,7 @@
         <!-- Splash Screen -->
         <div id="screen-splash" class="screen active flex-col items-center justify-center w-full h-full bg-slate-800 text-white">
             <div class="w-24 h-24 border-4 border-t-4 border-t-cyan-400 border-slate-600 rounded-full animate-spin"></div>
-            <h1 class="text-3xl font-bold mt-6">HandyDry Smart Control</h1>
+            <h1 class="text-3xl font-bold mt-6">HandyDry Smart</h1>
             <p class="text-slate-400">Effortless Laundry, Smarter Living.</p>
         </div>
 
