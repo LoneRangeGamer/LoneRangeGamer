@@ -2,7 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+    <meta name="mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#1e293b">
     <title>Handy Dry Smart Control</title>
     <script src="https://cdn.tailwindcss.com"></script>
@@ -10,7 +11,18 @@
     <link rel="manifest" href="/LoneRangeGamer/manifest.json">
     <link rel="apple-touch-icon" href="/LoneRangeGamer/icons/icon-192x192.png">
     <style>
-        body { font-family: 'Inter', sans-serif; }
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+        }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
         .screen { display: none; }
         .screen.active { display: flex; }
