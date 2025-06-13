@@ -5,518 +5,180 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#1e293b">
     <title>Smart Dryer Control</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="manifest" href="/LoneRangeGamer/manifest.json">
     <link rel="apple-touch-icon" href="/LoneRangeGamer/icons/icon-192x192.png">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f5f5f4;
-            color: #1c2524;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+        body { font-family: 'Inter', sans-serif; }
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&display=swap');
-        .screen {
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            width: 100%;
-            height: 100%;
-        }
-        .screen.active {
-            display: flex;
-        }
+        .screen { display: none; }
+        .screen.active { display: flex; }
         .modal-bg {
             background-color: rgba(0, 0, 0, 0.5);
             transition: opacity 0.3s ease;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 50;
-        }
-        .modal-bg.flex {
-            display: flex;
         }
         .modal-content {
             transition: transform 0.3s ease;
-            transform: scale(0.95);
-            opacity: 0;
-        }
-        .modal-bg:not(.opacity-0) .modal-content {
-            transform: scale(1);
-            opacity: 1;
-        }
-        .modal-bg.opacity-0 .modal-content {
-            transform: scale(0.95);
-            opacity: 0;
         }
         .chart-container {
             position: relative;
             width: 100%;
             max-width: 300px;
-            margin: 0 auto;
+            margin-left: auto;
+            margin-right: auto;
             height: 300px;
             max-height: 80vw;
         }
         @media (min-width: 768px) {
-            .chart-container {
-                max-height: 300px;
-            }
-        }
-        .container {
-            width: 100%;
-            max-width: 448px;
-            margin: 0 auto;
-            background-color: #fafaf9;
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-            border-radius: 24px;
-            overflow: hidden;
-            height: 80vh;
-            min-height: 600px;
-            max-height: 800px;
-            display: flex;
-            flex-direction: column;
-        }
-        .splash {
-            background-color: #1e293b;
-            color: #ffffff;
-            text-align: center;
-        }
-        .spinner {
-            width: 96px;
-            height: 96px;
-            border: 4px solid #475569;
-            border-top: 4px solid #22d3ee;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .splash h1 {
-            font-size: 30px;
-            font-weight: 700;
-            margin-top: 24px;
-        }
-        .splash p {
-            color: #94a3b8;
-        }
-        .bluetooth {
-            padding: 24px;
-            text-align: center;
-        }
-        .bluetooth h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #1e293b;
-        }
-        .bluetooth p {
-            color: #78716c;
-            margin: 8px 0 24px;
-        }
-        .bluetooth-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto;
-            background-color: #cffafe;
-            color: #0891b2;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 40px;
-            margin-bottom: 24px;
-        }
-        .bluetooth p.small {
-            font-size: 14px;
-            color: #57534e;
-            margin-bottom: 16px;
-        }
-        button {
-            width: 100%;
-            background-color: #1e293b;
-            color: #ffffff;
-            font-weight: 700;
-            padding: 12px 16px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        button:hover {
-            background-color: #334155;
-        }
-        .bluetooth .hidden {
-            display: none;
-        }
-        .bluetooth .devices-list button {
-            text-align: left;
-            background-color: #f5f5f4;
-            padding: 12px;
-            margin-bottom: 8px;
-            border-radius: 8px;
-        }
-        .bluetooth .devices-list button:hover {
-            background-color: #e7e5e4;
-        }
-        .connecting-spinner {
-            width: 64px;
-            height: 64px;
-            border: 4px solid #e7e5e4;
-            border-top: 4px solid #06b6d4;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 16px;
-        }
-        .dashboard header {
-            padding: 24px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .dashboard h1 {
-            font-size: 24px;
-            font-weight: 800;
-            color: #1e293b;
-        }
-        .dashboard .status {
-            font-size: 14px;
-            font-weight: 500;
-            color: #2563eb;
-        }
-        .settings-btn {
-            width: 40px;
-            height: 40px;
-            background-color: #e7e5e4;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-        }
-        .settings-btn:hover {
-            background-color: #d6d3d1;
-        }
-        .dashboard main {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 16px;
-            margin-top: -8px;
-        }
-        .dashboard footer {
-            padding: 16px;
-            background-color: #f5f5f4;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-        }
-        .footer-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .footer-grid p.label {
-            font-size: 12px;
-            color: #78716c;
-        }
-        .footer-grid p.value {
-            font-size: 18px;
-            font-weight: 700;
-        }
-        .power-btn {
-            background-color: #06b6d4;
-            transform: scale(1);
-            transition: transform 0.3s ease-in-out;
-        }
-        .power-btn:hover {
-            transform: scale(1.05);
-        }
-        .power-btn.stop {
-            background-color: #f43f5e;
-        }
-        .chart-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            pointer-events: none;
-        }
-        .time-remaining {
-            font-size: 48px;
-            font-weight: 700;
-            color: #f8fafc;
-        }
-        .timer-label {
-            font-size: 14px;
-            font-weight: 500;
-            color: #78716c;
-        }
-        .modal {
-            background-color: #ffffff;
-            border-radius: 16px;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            width: 91.67%;
-            max-width: 384px;
-            padding: 24px;
-        }
-        .modal h3 {
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 24px;
-            text-align: center;
-        }
-        .modal label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-        }
-        .modal input[type="range"] {
-            width: 100%;
-            height: 8px;
-            background-color: #e7e5e4;
-            border-radius: 8px;
-            cursor: pointer;
-            -webkit-appearance: none;
-        }
-        .modal input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 16px;
-            height: 16px;
-            background-color: #1e293b;
-            border-radius: 50%;
-        }
-        .timer-controls {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-        .timer-btn {
-            width: 48px;
-            height: 48px;
-            background-color: #e7e5e4;
-            font-size: 24px;
-            font-weight: 700;
-            border-radius: 50%;
-        }
-        .timer-btn:hover {
-            background-color: #d6d3d1;
-        }
-        .timer-value {
-            font-size: 36px;
-            font-weight: 700;
-            width: 80px;
-            text-align: center;
-        }
-        .modal-buttons {
-            display: flex;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-        .modal-buttons button.cancel {
-            background-color: #e7e5e4;
-            color: #1c2524;
-        }
-        .modal-buttons button.cancel:hover {
-            background-color: #d6d3d1;
-        }
-        .fabric-input {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #d6d3d1;
-            border-radius: 8px;
-            margin-bottom: 16px;
-        }
-        .fabric-input:focus {
-            outline: none;
-            border-color: #06b6d4;
-            box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.5);
-        }
-        .advice-content {
-            color: #1c2524;
-            font-size: 14px;
-            line-height: 1.5;
-            background-color: #f5f5f4;
-            padding: 16px;
-            border-radius: 8px;
-            overflow-y: auto;
-            max-height: 256px;
-            margin-bottom: 24px;
-        }
-        .advice-spinner {
-            width: 40px;
-            height: 40px;
-            border: 4px solid #e7e5e4;
-            border-top: 4px solid #a855f7;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 32px auto;
-        }
-        .advice-loading {
-            color: #78716c;
-            text-align: center;
+            .chart-container { max-height: 300px; }
         }
     </style>
 </head>
-<body>
-    <div class="container">
+<body class="bg-stone-100 text-stone-800 flex items-center justify-center min-h-screen">
+
+    <div class="w-full max-w-md mx-auto bg-stone-50 shadow-2xl rounded-3xl overflow-hidden h-[80vh] min-h-[600px] max-h-[800px] flex flex-col">
+
         <!-- Splash Screen -->
-        <div id="screen-splash" class="screen active splash">
-            <div class="spinner"></div>
-            <h1>SmartDry</h1>
-            <p>Effortless Laundry, Smarter Living.</p>
+        <div id="screen-splash" class="screen active flex-col items-center justify-center w-full h-full bg-slate-800 text-white">
+            <div class="w-24 h-24 border-4 border-t-4 border-t-cyan-400 border-slate-600 rounded-full animate-spin"></div>
+            <h1 class="text-3xl font-bold mt-6">SmartDry</h1>
+            <p class="text-slate-400">Effortless Laundry, Smarter Living.</p>
         </div>
+
         <!-- Bluetooth Connection Screen -->
-        <div id="screen-bluetooth" class="screen bluetooth">
-            <h2>Connect Your Dryer</h2>
-            <p>First, let's pair your dryer using Bluetooth.</p>
+        <div id="screen-bluetooth" class="screen flex-col items-center justify-center w-full h-full p-6 text-center">
+            <h2 class="text-2xl font-bold text-slate-800">Connect Your Dryer</h2>
+            <p class="text-stone-500 mt-2 mb-6">First, let's pair your dryer using Bluetooth.</p>
             <div id="bluetooth-initial-view">
-                <div class="bluetooth-icon">B</div>
-                <p class="small">1. Ensure your dryer's Bluetooth is enabled.</p>
-                <button id="scan-btn">Scan for Dryers</button>
+                <div class="w-20 h-20 mx-auto bg-cyan-100 text-cyan-600 rounded-full flex items-center justify-center text-4xl mb-6">B</div>
+                <p class="text-sm text-stone-600 mb-4">1. Ensure your dryer's Bluetooth is enabled.</p>
+                <button id="scan-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Scan for Dryers</button>
             </div>
-            <div id="bluetooth-scan-view" class="hidden">
-                 <div>
-                    <p style="font-weight: 700; margin-bottom: 8px;">Searching for devices...</p>
-                    <div class="devices-list" id="devices-list"></div>
+            <div id="bluetooth-scan-view" class="hidden w-full">
+                 <div class="w-full text-left">
+                    <p class="font-bold mb-2">Searching for devices...</p>
+                    <div class="space-y-2" id="devices-list"></div>
                  </div>
             </div>
-             <div id="bluetooth-connecting-view" class="hidden">
-                <div class="connecting-spinner"></div>
-                <p style="font-size: 18px; font-weight: 600; color: #57534e;">Connecting...</p>
+             <div id="bluetooth-connecting-view" class="hidden w-full">
+                <div class="w-16 h-16 border-4 border-t-4 border-t-cyan-500 border-stone-200 rounded-full animate-spin mx-auto mb-4"></div>
+                <p class="text-lg font-semibold text-stone-700">Connecting to <span id="connecting-device-name"></span>...</p>
             </div>
         </div>
+
         <!-- Home/Dashboard Screen -->
-        <div id="screen-dashboard" class="screen dashboard">
-            <header>
+        <div id="screen-dashboard" class="screen flex-col w-full h-full">
+            <header class="p-6 flex items-center justify-between">
                 <div>
-                    <h1>MyDryer X1</h1>
-                    <p id="dryer-status-header" class="status">Connected & Ready</p>
+                    <h1 class="text-2xl font-extrabold text-slate-800">MyDryer X1</h1>
+                    <p id="dryer-status-header" class="text-sm font-medium text-green-600">Connected & Ready</p>
                 </div>
-                <button id="open-settings-btn" class="settings-btn">⚙</button>
+                <button id="open-settings-btn" class="w-10 h-10 bg-stone-200 rounded-full flex items-center justify-center text-xl hover:bg-stone-300 transition-colors">⚙</button>
             </header>
-            <main>
+            <main class="flex-1 flex flex-col items-center justify-center p-6 -mt-8">
                 <div class="chart-container">
                     <canvas id="time-remaining-chart"></canvas>
-                    <div class="chart-overlay">
-                        <div id="time-remaining-text" class="time-remaining">0:00</div>
-                        <div id="timer-label" class="timer-label">Time Remaining</div>
+                    <div id="timer-display" class="absolute inset-0 flex flex-col items-center justify-center text-center pointer-events-none">
+                        <span id="time-remaining-text" class="text-5xl font-bold text-slate-800">0:00</span>
+                        <span id="timer-label" class="text-sm font-medium text-stone-500">Time Remaining</span>
                     </div>
                 </div>
             </main>
-            <footer>
-                <div class="footer-grid">
+            <footer class="p-6 bg-stone-100 rounded-t-3xl">
+                <div class="grid grid-cols-2 gap-4 text-center mb-6">
                     <div>
-                        <p class="label">Temperature</p>
-                        <p id="temp-display" class="value">60°C</p>
+                        <p class="text-xs text-stone-500">Temperature</p>
+                        <p id="temp-display" class="font-bold text-lg">60°C</p>
                     </div>
                     <div>
-                        <p class="label">Duration</p>
-                        <p id="duration-display" class="value">45 min</p>
+                        <p class="text-xs text-stone-500">Duration</p>
+                        <p id="duration-display" class="font-bold text-lg">45 min</p>
                     </div>
                 </div>
-                <button id="power-btn" class="power-btn">Turn On Dryer</button>
+                <button id="power-btn" class="w-full font-bold py-4 px-4 rounded-2xl transition-all duration-300 ease-in-out transform hover:scale-105 bg-cyan-500 text-white">Turn On Dryer</button>
             </footer>
         </div>
+
     </div>
+
     <!-- Settings Modal -->
-    <div id="settings-modal" class="fixed inset-0 modal-bg">
-        <div class="modal">
-            <h3>Dryer Settings</h3>
-            <div style="margin-bottom: 24px;">
-                <label for="temp-slider">Temperature: <span id="temp-value">60</span>°C</label>
-                <input id="temp-slider" type="range" min="30" max="60" value="60">
+    <div id="settings-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
+        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
+            <h3 class="text-xl font-bold mb-6 text-center">Dryer Settings</h3>
+            
+            <div class="mb-6">
+                <label for="temp-slider" class="block font-medium mb-2">Temperature: <span id="temp-value">60</span>°C</label>
+                <input id="temp-slider" type="range" min="30" max="60" value="60" class="w-full h-2 bg-stone-200 rounded-lg appearance-none cursor-pointer">
             </div>
-            <div style="margin-bottom: 32px;">
-                <label>Timer (minutes)</label>
-                <div class="timer-controls">
-                    <button id="timer-minus" class="timer-btn">-</button>
-                    <span id="timer-value" class="timer-value">45</span>
-                    <button id="timer-plus" class="timer-btn">+</button>
+
+            <div class="mb-8">
+                <label class="block font-medium mb-2">Timer (minutes)</label>
+                <div class="flex items-center justify-center space-x-4">
+                    <button id="timer-minus" class="w-12 h-12 bg-stone-200 text-2xl font-bold rounded-full hover:bg-stone-300 transition-colors">-</button>
+                    <span id="timer-value" class="text-3xl font-bold w-20 text-center">45</span>
+                    <button id="timer-plus" class="w-12 h-12 bg-stone-200 text-2xl font-bold rounded-full hover:bg-stone-300 transition-colors">+</button>
                 </div>
             </div>
-            <div class="modal-buttons">
-                <button id="cancel-settings-btn" class="cancel">Cancel</button>
-                <button id="save-settings-btn">Save</button>
+
+            <div class="flex space-x-4 mb-4">
+                <button id="cancel-settings-btn" class="w-full bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl hover:bg-stone-300 transition-colors">Cancel</button>
+                <button id="save-settings-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Save</button>
             </div>
-            <!-- <button id="get-fabric-advice-btn" style="background-color: #a855f7; color: #ffffff; margin-top: 8px;">✨ Get Fabric Care Advice ✨</button> -->
+            
+            <!-- <button id="get-fabric-advice-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition-colors mt-2">✨ Get Fabric Care Advice ✨</button> -->
         </div>
     </div>
+
     <!-- Fabric Advice Input Modal -->
-    <div id="fabric-input-modal" class="fixed inset-0 modal-bg">
-        <div class="modal">
-            <h3>What fabric are you drying?</h3>
-            <input type="text" id="fabric-input" placeholder="e.g., Cotton, Silk, Denim" class="fabric-input">
-            <div class="modal-buttons">
-                <button id="cancel-fabric-input-btn" class="cancel">Cancel</button>
-                <button id="submit-fabric-input-btn" style="background-color: #a855f7; color: #ffffff;">Get Advice</button>
+    <div id="fabric-input-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
+        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-sm p-6 modal-content scale-95 opacity-0">
+            <h3 class="text-xl font-bold mb-6 text-center">What fabric are you drying?</h3>
+            <input type="text" id="fabric-input" placeholder="e.g., Cotton, Silk, Denim" class="w-full p-3 border border-stone-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-cyan-500">
+            <div class="flex space-x-4">
+                <button id="cancel-fabric-input-btn" class="w-full bg-stone-200 text-stone-800 font-bold py-3 px-4 rounded-xl hover:bg-stone-300 transition-colors">Cancel</button>
+                <button id="submit-fabric-input-btn" class="w-full bg-purple-600 text-white font-bold py-3 px-4 rounded-xl hover:bg-purple-700 transition-colors">Get Advice</button>
             </div>
         </div>
     </div>
+
     <!-- Advice Display Modal -->
-    <div id="advice-display-modal" class="fixed inset-0 modal-bg">
-        <div class="modal" style="max-width: 448px;">
-            <h3>✨ Fabric Care Advice ✨</h3>
-            <div id="advice-content" class="advice-content">
-                <div class="advice-spinner"></div>
-                <p class="advice-loading">Generating advice...</p>
+    <div id="advice-display-modal" class="fixed inset-0 z-50 items-center justify-center hidden modal-bg">
+        <div class="bg-white rounded-2xl shadow-lg w-11/12 max-w-md p-6 modal-content scale-95 opacity-0">
+            <h3 class="text-xl font-bold mb-4 text-center">✨ Fabric Care Advice ✨</h3>
+            <div id="advice-content" class="text-stone-700 text-sm leading-relaxed mb-6 bg-stone-100 p-4 rounded-lg overflow-y-auto max-h-64">
+                <div class="w-10 h-10 border-4 border-t-4 border-t-purple-500 border-stone-200 rounded-full animate-spin mx-auto my-8"></div>
+                <p class="text-center text-stone-500">Generating advice...</p>
             </div>
-            <button id="close-advice-btn">Close</button>
+            <button id="close-advice-btn" class="w-full bg-slate-800 text-white font-bold py-3 px-4 rounded-xl hover:bg-slate-700 transition-colors">Close</button>
         </div>
     </div>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // Request Notification Permission
-    function requestNotificationPermission() {
-        if (Notification.permission === 'default') {
-            Notification.requestPermission().then(permission => {
-                if (permission === 'granted') {
-                    console.log('Notification permission granted.');
-                } else {
-                    console.log('Notification permission denied.');
-                }
-            });
-        }
-    }
-    // Show Notification
-    function showNotification(title, options) {
-        if (Notification.permission === 'granted') {
-            new Notification(title, options);
-        }
-    }
+    
     // Register Service Worker
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.register('/LoneRangeGamer/service-worker.js')
             .then(reg => console.log('Service Worker registered:', reg))
             .catch(err => console.error('Service Worker registration failed:', err));
     }
+
+    // Request Notification Permission
+    if ('Notification' in window) {
+        Notification.requestPermission().then(permission => {
+            console.log('Notification permission:', permission);
+        }).catch(err => {
+            console.error('Error requesting notification permission:', err);
+        });
+    }
+    
     const screens = {
         splash: document.getElementById('screen-splash'),
         bluetooth: document.getElementById('screen-bluetooth'),
         dashboard: document.getElementById('screen-dashboard')
     };
+
     const bluetoothViews = {
         initial: document.getElementById('bluetooth-initial-view'),
         scan: document.getElementById('scan-btn'),
@@ -524,9 +186,10 @@ document.addEventListener('DOMContentLoaded', () => {
         connecting: document.getElementById('bluetooth-connecting-view'),
         devicesList: document.getElementById('devices-list')
     };
+    
     const settingsModal = {
         container: document.getElementById('settings-modal'),
-        content: document.querySelector('#settings-modal .modal'),
+        content: document.querySelector('#settings-modal .modal-content'),
         tempSlider: document.getElementById('temp-slider'),
         tempValue: document.getElementById('temp-value'),
         timerValue: document.getElementById('timer-value'),
@@ -534,21 +197,24 @@ document.addEventListener('DOMContentLoaded', () => {
         timerPlus: document.getElementById('timer-plus'),
         saveBtn: document.getElementById('save-settings-btn'),
         cancelBtn: document.getElementById('cancel-settings-btn'),
-        // getFabricAdviceBtn: document.getElementById('get-fabric-advice-btn'), // Commented out
+        getFabricAdviceBtn: document.getElementById('get-fabric-advice-btn'),
     };
+
     const fabricInputModal = {
         container: document.getElementById('fabric-input-modal'),
-        content: document.querySelector('#fabric-input-modal .modal'),
+        content: document.querySelector('#fabric-input-modal .modal-content'),
         fabricInput: document.getElementById('fabric-input'),
         cancelBtn: document.getElementById('cancel-fabric-input-btn'),
         submitBtn: document.getElementById('submit-fabric-input-btn'),
     };
+
     const adviceDisplayModal = {
         container: document.getElementById('advice-display-modal'),
-        content: document.querySelector('#advice-display-modal .modal'),
+        content: document.querySelector('#advice-display-modal .modal-content'),
         adviceContent: document.getElementById('advice-content'),
         closeBtn: document.getElementById('close-advice-btn'),
     };
+    
     const dashboardElements = {
         openSettingsBtn: document.getElementById('open-settings-btn'),
         powerBtn: document.getElementById('power-btn'),
@@ -558,8 +224,10 @@ document.addEventListener('DOMContentLoaded', () => {
         timeRemainingText: document.getElementById('time-remaining-text'),
         timerLabel: document.getElementById('timer-label')
     };
+
     let timeRemainingChart;
     let timerInterval;
+
     const appState = {
         currentScreen: 'splash',
         temperature: 60,
@@ -568,6 +236,7 @@ document.addEventListener('DOMContentLoaded', () => {
         timeRemaining: 0,
         totalDuration: 45 * 60,
     };
+
     function navigateTo(screenName) {
         Object.values(screens).forEach(screen => screen.classList.remove('active'));
         if (screens[screenName]) {
@@ -575,12 +244,14 @@ document.addEventListener('DOMContentLoaded', () => {
             appState.currentScreen = screenName;
         }
     }
+    
     function formatTime(seconds) {
         if (seconds < 0) seconds = 0;
         const m = Math.floor(seconds / 60);
         const s = seconds % 60;
         return `${m}:${s < 10 ? '0' : ''}${s}`;
     }
+
     function updateDashboardDisplays() {
         dashboardElements.tempDisplay.textContent = `${appState.temperature}°C`;
         dashboardElements.durationDisplay.textContent = `${appState.duration} min`;
@@ -591,6 +262,7 @@ document.addEventListener('DOMContentLoaded', () => {
              updateChart(appState.timeRemaining, appState.totalDuration);
         }
     }
+
     function initChart() {
         const ctx = document.getElementById('time-remaining-chart').getContext('2d');
         timeRemainingChart = new Chart(ctx, {
@@ -618,60 +290,84 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         updateDashboardDisplays();
     }
+    
     function updateChart(remaining, total) {
         if (!timeRemainingChart) return;
         const progress = total > 0 ? ((total - remaining) / total) * 100 : 0;
         const remainingPercentage = 100 - progress;
         timeRemainingChart.data.datasets[0].data[0] = progress;
         timeRemainingChart.data.datasets[0].data[1] = remainingPercentage;
-        timeRemainingChart.update('none');
+        timeRemainingChart.update('none'); 
     }
+
+    function showCycleCompletedNotification() {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            new Notification('Smart Dryer Control', {
+                body: 'Cycle Completed!',
+                icon: '/LoneRangeGamer/icons/icon-192x192.png'
+            });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(permission => {
+                if (permission === 'granted') {
+                    new Notification('Smart Dryer Control', {
+                        body: 'Cycle Completed!',
+                        icon: '/LoneRangeGamer/icons/icon-192x192.png'
+                    });
+                }
+            });
+        }
+    }
+
     function startDryingCycle() {
         if (appState.isDrying) return;
-        // Request notification permission before starting cycle
-        requestNotificationPermission();
         appState.isDrying = true;
         appState.totalDuration = appState.duration * 60;
         appState.timeRemaining = appState.totalDuration;
+
         dashboardElements.powerBtn.textContent = 'Turn Off Dryer';
-        dashboardElements.powerBtn.classList.add('stop');
+        dashboardElements.powerBtn.classList.remove('bg-cyan-500');
+        dashboardElements.powerBtn.classList.add('bg-rose-500');
         dashboardElements.dryerStatusHeader.textContent = 'Drying Cycle Active';
-        dashboardElements.dryerStatusHeader.style.color = '#f59e0b';
+        dashboardElements.dryerStatusHeader.classList.remove('text-green-600');
+        dashboardElements.dryerStatusHeader.classList.add('text-amber-600');
         dashboardElements.timerLabel.textContent = "Time Remaining";
         dashboardElements.openSettingsBtn.disabled = true;
-        dashboardElements.openSettingsBtn.style.opacity = '0.5';
+        dashboardElements.openSettingsBtn.classList.add('opacity-50');
+
         timerInterval = setInterval(() => {
             appState.timeRemaining -= 1;
             dashboardElements.timeRemainingText.textContent = formatTime(appState.timeRemaining);
             updateChart(appState.timeRemaining, appState.totalDuration);
+
             if (appState.timeRemaining <= 0) {
                 stopDryingCycle(true);
             }
         }, 1000);
     }
+    
     function stopDryingCycle(isFinished = false) {
         clearInterval(timerInterval);
         appState.isDrying = false;
+        
         dashboardElements.powerBtn.textContent = 'Turn On Dryer';
-        dashboardElements.powerBtn.classList.remove('stop');
+        dashboardElements.powerBtn.classList.remove('bg-rose-500');
+        dashboardElements.powerBtn.classList.add('bg-cyan-500');
         dashboardElements.dryerStatusHeader.textContent = isFinished ? 'Cycle Complete' : 'Connected & Ready';
-        dashboardElements.dryerStatusHeader.style.color = '#2563eb';
+        dashboardElements.dryerStatusHeader.classList.add('text-green-600');
+        dashboardElements.dryerStatusHeader.classList.remove('text-amber-600');
         dashboardElements.openSettingsBtn.disabled = false;
-        dashboardElements.openSettingsBtn.style.opacity = '1';
+        dashboardElements.openSettingsBtn.classList.remove('opacity-50');
+        
         if (isFinished) {
             dashboardElements.timerLabel.textContent = "Finished!";
             dashboardElements.timeRemainingText.textContent = "Done";
             updateChart(0, 1);
-            // Show notification
-            showNotification('Smart Dryer Control', {
-                body: 'Cycle Complete! Your laundry is ready.',
-                icon: '/LoneRangeGamer/icons/icon-192x192.png',
-                badge: '/LoneRangeGamer/icons/icon-192x192.png'
-            });
+            showCycleCompletedNotification(); // Show notification when cycle completes
         } else {
-            updateDashboardDisplays();
+             updateDashboardDisplays();
         }
     }
+
     function showModal(modalObj) {
         modalObj.container.classList.remove('hidden');
         modalObj.container.classList.add('flex');
@@ -680,6 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
             modalObj.content.classList.remove('scale-95', 'opacity-0');
         }, 10);
     }
+
     function hideModal(modalObj) {
         modalObj.container.classList.add('opacity-0');
         modalObj.content.classList.add('scale-95', 'opacity-0');
@@ -688,9 +385,11 @@ document.addEventListener('DOMContentLoaded', () => {
             modalObj.container.classList.remove('flex');
         }, 300);
     }
+
     function handleBluetoothConnection() {
         bluetoothViews.initial.classList.add('hidden');
         bluetoothViews.scanView.classList.remove('hidden');
+
         setTimeout(() => {
             const devices = ['SmartDryer X1', 'Laundry Room Dryer', 'Basement Dryer'];
             bluetoothViews.devicesList.innerHTML = '';
@@ -701,6 +400,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.onclick = () => {
                     bluetoothViews.scanView.classList.add('hidden');
                     bluetoothViews.connecting.classList.remove('hidden');
+                    document.getElementById('connecting-device-name').textContent = device;
                     setTimeout(() => {
                         navigateTo('dashboard');
                         initChart();
@@ -710,18 +410,22 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }, 1500);
     }
+
     async function getFabricCareAdvice(fabricType) {
         adviceDisplayModal.adviceContent.innerHTML = `
-            <div class="advice-spinner"></div>
-            <p class="advice-loading">Generating advice for ${fabricType}...</p>
+            <div class="w-10 h-10 border-4 border-t-4 border-t-purple-500 border-stone-200 rounded-full animate-spin mx-auto my-8"></div>
+            <p class="text-center text-stone-500">Generating advice for ${fabricType}...</p>
         `;
         showModal(adviceDisplayModal);
+
         const prompt = `Provide concise smart dryer settings and tips for drying ${fabricType}, including recommended temperature (e.g., low, medium, high), duration (e.g., short, medium, long), and any special instructions (e.g., air dry, tumble dry low). Be specific and helpful. Format as a short paragraph.`;
+        
         let chatHistory = [];
         chatHistory.push({ role: "user", parts: [{ text: prompt }] });
         const payload = { contents: chatHistory };
         const apiKey = "";
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
         try {
             const response = await fetch(apiUrl, {
                 method: 'POST',
@@ -741,15 +445,19 @@ document.addEventListener('DOMContentLoaded', () => {
             adviceDisplayModal.adviceContent.textContent = `An error occurred: ${error.message}. Please check your connection.`;
         }
     }
+
     // Event Listeners
     setTimeout(() => navigateTo('bluetooth'), 2000);
+    
     bluetoothViews.scan.addEventListener('click', handleBluetoothConnection);
+    
     dashboardElements.openSettingsBtn.addEventListener('click', () => {
         if (!appState.isDrying) showModal(settingsModal);
     });
     dashboardElements.powerBtn.addEventListener('click', () => {
         appState.isDrying ? stopDryingCycle() : startDryingCycle();
     });
+
     settingsModal.cancelBtn.addEventListener('click', () => hideModal(settingsModal));
     settingsModal.saveBtn.addEventListener('click', () => {
         appState.temperature = parseInt(settingsModal.tempSlider.value);
@@ -757,32 +465,37 @@ document.addEventListener('DOMContentLoaded', () => {
         updateDashboardDisplays();
         hideModal(settingsModal);
     });
+
     settingsModal.tempSlider.addEventListener('input', (e) => {
         settingsModal.tempValue.textContent = e.target.value;
     });
+
     settingsModal.timerMinus.addEventListener('click', () => {
         let current = parseInt(settingsModal.timerValue.textContent);
         if (current > 5) {
             settingsModal.timerValue.textContent = current - 5;
         }
     });
+
     settingsModal.timerPlus.addEventListener('click', () => {
         let current = parseInt(settingsModal.timerValue.textContent);
          if (current < 180) {
             settingsModal.timerValue.textContent = current + 5;
         }
     });
-    // LLM Integration Event Listeners (Commented out due to missing API key)
-    /*
+
+    // LLM Integration Event Listeners
     settingsModal.getFabricAdviceBtn.addEventListener('click', () => {
         hideModal(settingsModal);
         showModal(fabricInputModal);
-        fabricInputModal.fabricInput.value = '';
+        fabricInputModal.fabricInput.value = ''; // Clear previous input
     });
+
     fabricInputModal.cancelBtn.addEventListener('click', () => {
         hideModal(fabricInputModal);
-        showModal(settingsModal);
+        showModal(settingsModal); // Return to settings modal
     });
+
     fabricInputModal.submitBtn.addEventListener('click', () => {
         const fabricType = fabricInputModal.fabricInput.value.trim();
         if (fabricType) {
@@ -793,11 +506,11 @@ document.addEventListener('DOMContentLoaded', () => {
             fabricInputModal.fabricInput.classList.add('border-red-500');
         }
     });
+
     adviceDisplayModal.closeBtn.addEventListener('click', () => {
         hideModal(adviceDisplayModal);
-        showModal(settingsModal);
+        showModal(settingsModal); // Return to settings modal
     });
-    */
 });
 </script>
 </body>
