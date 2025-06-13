@@ -1,0 +1,22 @@
+{
+  "name": "Smart Dryer Control",
+  "short_name": "SmartDry",
+  "description": "Control your smart dryer with ease. Set temperature, timer, and get fabric care advice.",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#1e293b",
+  "theme_color": "#1e293b",
+  "icons": [
+    {
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "orientation": "portrait"
+}
